@@ -15,6 +15,10 @@ function draw() {
   handleInput();
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 function generatePlatforms() {
   platforms.push(new Platform(-5000, height - 20, width + 5000, 20));
   platforms.push(new MovingPlatform(400, 500, 300, 20, 0.01, 0.01, 100, 0));
