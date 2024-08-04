@@ -5,6 +5,7 @@ const JUMPHEIGHT = 5;
 
 class Player {
   constructor(posX, posY, width, height, platforms) {
+    this.collisionHandler = new CollisionHandler();
     this.position = createVector(posX, posY);
     this.dimension = createVector(width, height);
 
@@ -58,60 +59,8 @@ class Player {
 
   processPlatformCollisions() {
     this.platforms.forEach((platform) => {
-      this.checkVerticalCollision(platform);
-      this.checkHorizontalCollision(platform);
+      this.collisionHandler.checkPlayerPlatformCollisions(this, platform);
     });
-  }
-
-  checkVerticalCollision(platform) {
-    const isAbovePlatform = this.position.y <= platform.position.y;
-    const willFallOnPlatform =
-      this.position.y + this.speed.y >= platform.position.y - this.dimension.y;
-    const isWithinHorizontalBounds =
-      this.position.x + this.dimension.x >= platform.position.x &&
-      this.position.x <= platform.position.x + platform.dimension.x;
-    const isFalling = this.speed.y > 0;
-    if (
-      isAbovePlatform &&
-      willFallOnPlatform &&
-      isWithinHorizontalBounds &&
-      isFalling
-    ) {
-      this.speed.y = 0;
-      this.position.y = platform.position.y - this.dimension.y;
-      if (platform instanceof MovingPlatform) {
-        const deltaX = platform.position.x - platform.prevPosition.x;
-        const deltaY = platform.position.y - platform.prevPosition.y;
-        this.position.x += deltaX;
-        this.position.y += deltaY;
-      }
-    }
-  }
-
-  checkHorizontalCollision(platform) {
-    const isWithinVerticalBounds =
-      this.position.y + this.dimension.y > platform.position.y &&
-      this.position.y < platform.position.y + platform.dimension.y;
-    const isCrossingFromLeft =
-      this.position.x <= platform.position.x + platform.dimension.x &&
-      this.position.x >= platform.position.x;
-    const isCrossingFromRight =
-      this.position.x + this.dimension.x >= platform.position.x &&
-      this.position.x + this.dimension.x <=
-        platform.position.x + platform.dimension.x;
-
-    if (isWithinVerticalBounds && (isCrossingFromLeft || isCrossingFromRight)) {
-      const isBlockedMovingLeft =
-        this.speed.x < 0 &&
-        this.position.x + this.dimension.x >
-          platform.position.x + platform.dimension.x;
-      const isBlockedMovingRight =
-        this.speed.x > 0 && this.position.x < platform.position.x;
-
-      if (isBlockedMovingLeft || isBlockedMovingRight) {
-        this.speed.x = 0;
-      }
-    }
   }
 
   goLeft() {
